@@ -200,7 +200,7 @@ const struct rig_caps tmd700_caps = {
 
 .rig_init = kenwood_init,
 .rig_cleanup = kenwood_cleanup,
-.set_freq =  th_set_freq,
+.set_freq =  tmd700_set_freq,
 .get_freq =  th_get_freq,
 .set_mode =  th_set_mode,
 .get_mode =  th_get_mode,
@@ -236,5 +236,38 @@ const struct rig_caps tmd700_caps = {
 .decode_event =  th_decode_event,
 };
 
+/*
+ * th_set_freq
+ * Assumes rig!=NULL
+ */
+int
+tmd700_set_freq(RIG *rig, vfo_t vfo, freq_t freq)
+{
+	char buf[20];
+	int step;
+	freq_t freq5,freq625,freq_sent;
+
+	rig_debug(RIG_DEBUG_TRACE, "%s: called\n", __func__);
+
+	if (vfo != RIG_VFO_CURR && vfo != rig->state.current_vfo)
+		return kenwood_wrong_vfo(__func__, vfo);
+
+	freq5=round(freq/5000)*5000;
+	freq625=round(freq/6250)*6250;
+	if (fabs(freq5-freq)<fabs(freq625-freq)) {
+	  step=0;
+	  freq_sent=freq5;
+	}
+	else {
+	  step=1;
+	  freq_sent=freq625;
+	}
+	/* Step needs to be at least 10kHz on higher band, otherwise 5 kHz */
+	step = freq_sent >= MHz(470) ? 4 : step;
+	freq_sent = freq_sent >= MHz(470) ? (round(freq_sent/10000)*10000) : freq_sent;
+	sprintf(buf, "FQ %011"PRIll",%X", (int64_t) freq_sent, step);
+
+	return kenwood_transaction(rig, buf, buf, 20);
+}
 
 /* end of file */

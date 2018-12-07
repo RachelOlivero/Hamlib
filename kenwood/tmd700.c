@@ -238,6 +238,14 @@ const struct rig_caps tmd700_caps = {
 .decode_event =  th_decode_event,
 };
 
+
+static int
+kenwood_wrong_vfo(const char *func, vfo_t vfo)
+{
+	rig_debug(RIG_DEBUG_ERR, "%s: Unsupported VFO: %d\n", func, vfo);
+	return -RIG_ENTARGET;
+}
+
 /*
  * tmd700_set_freq
  * Assumes rig!=NULL

@@ -31,6 +31,7 @@
 #include "th.h"
 #include "tones.h"
 
+static int tmd700_set_freq(RIG *rig, vfo_t vfo, freq_t freq);
 
 #define TMD700_MODES	  (RIG_MODE_FM|RIG_MODE_AM)
 #define TMD700_MODES_TX (RIG_MODE_FM)
@@ -237,10 +238,10 @@ const struct rig_caps tmd700_caps = {
 };
 
 /*
- * th_set_freq
+ * tmd700_set_freq
  * Assumes rig!=NULL
  */
-int
+int 
 tmd700_set_freq(RIG *rig, vfo_t vfo, freq_t freq)
 {
 	char buf[20];

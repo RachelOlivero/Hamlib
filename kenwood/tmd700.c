@@ -30,6 +30,7 @@
 #include "kenwood.h"
 #include "th.h"
 #include "tones.h"
+#include "misc.h"
 
 static int tmd700_set_freq(RIG *rig, vfo_t vfo, freq_t freq);
 
